@@ -3,109 +3,280 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Panel — Export settings.json</title>
+  <title>لوحة تحكم Admin - إدارة الإعلانات والروابط</title>
   <style>
-    body{font-family:Tahoma, Arial, sans-serif;background:#f6f7fb;margin:20px}
-    .card{background:#fff;padding:14px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.06);max-width:900px;margin:0 auto}
-    textarea,input{width:100%;padding:8px;border:1px solid #e6e6e9;border-radius:6px;resize:vertical}
-    label{font-weight:700;margin-top:8px;display:block}
-    .row{display:flex;gap:8px;margin-top:12px}
-    button{padding:8px 12px;border:none;border-radius:6px;background:#0ea5a3;color:#fff;cursor:pointer}
+    :root{--bg:#f7f7f9;--card:#fff;--accent:#0ea5a3}
+    body{font-family:Tahoma, Arial, sans-serif;background:var(--bg);margin:0;padding:20px}
+    .container{max-width:1100px;margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    label{display:block;margin-bottom:6px;font-weight:600}
+    textarea,input[type=text]{width:100%;padding:8px;border:1px solid #e6e6e9;border-radius:8px;resize:vertical}
+    .row{display:flex;gap:8px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
     button.secondary{background:#6b7280}
-    .hint{font-size:13px;color:#555;margin-top:6px}
+    .small{font-size:13px;color:#555}
+    .preview{height:calc(100vh - 160px);overflow:auto;padding:10px;border-radius:8px;background:#fafafa}
+    .hint{font-size:12px;color:#666;margin-top:6px}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>لوحة الإعدادات — تنزيل settings.json للرفع إلى GitHub</h2>
+  <div class="container">
+    <header>
+      <h1>لوحة تحكم Admin — إدارة الإعلانات والروابط</h1>
+      <div class="small">سيتم حفظ كل شيء في <strong>localStorage</strong> تحت المفتاح <code>adminSettings</code></div>
+    </header>
 
-    <label>Ads Header (HTML / &lt;script&gt;)</label>
-    <textarea id="ads-header" rows="4"></textarea>
-
-    <label>Ads Footer</label>
-    <textarea id="ads-footer" rows="3"></textarea>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div class="grid">
       <div>
-        <label>Ads Left</label>
-        <textarea id="ads-left" rows="4"></textarea>
+        <div class="card">
+          <h2>إعدادات الإعلانات</h2>
+          <p class="hint">ألصق كود الإعلانات (HTML أو &lt;script&gt;) هنا. سيتم عرضه داخل العناصر التي تحمل المعرفات: <code>ads-header</code>, <code>ads-footer</code>, <code>ads-left</code>, <code>ads-right</code>.</p>
+
+          <label for="ads-header">Ads Header</label>
+          <textarea id="ads-header-input" rows="4" placeholder="أدخل كود الإعلان أعلى الصفحة"></textarea>
+
+          <label for="ads-footer">Ads Footer</label>
+          <textarea id="ads-footer-input" rows="3" placeholder="أدخل كود الإعلان أسفل الصفحة"></textarea>
+
+          <div class="cols">
+            <div>
+              <label for="ads-left">Ads Left</label>
+              <textarea id="ads-left-input" rows="4" placeholder="كود شريط جانبي يسار"></textarea>
+            </div>
+            <div>
+              <label for="ads-right">Ads Right</label>
+              <textarea id="ads-right-input" rows="4" placeholder="كود شريط جانبي يمين"></textarea>
+            </div>
+          </div>
+
+          <hr style="margin:12px 0" />
+
+          <h2>إدارة روابط التبادل</h2>
+          <p class="hint">أدخل قائمة الروابط (واحد في كل سطر). سيخزنها المفتاح <code>exchangeLinks</code>.</p>
+          <textarea id="exchange-links-input" rows="6" placeholder="https://example.com/\nhttps://another.example/"></textarea>
+
+          <label for="blocked-sites">المواقع المحظورة (blockedSites)</label>
+          <textarea id="blocked-sites-input" rows="3" placeholder="أدخل رابط واحد في كل سطر لمنعه من الظهور"></textarea>
+
+          <div style="margin-top:12px" class="row">
+            <button id="save-btn">حفظ الإعدادات</button>
+            <button id="load-btn" class="secondary">تحميل الإعدادات</button>
+            <button id="clear-btn" class="secondary">مسح الإعدادات</button>
+          </div>
+
+          <div style="margin-top:10px" class="row">
+            <button id="export-btn" class="secondary">تصدير (JSON)</button>
+            <button id="import-btn" class="secondary">استيراد (JSON)</button>
+            <input id="file-input" type="file" style="display:none" accept="application/json" />
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>أزرار اختبار/معاينة</h2>
+          <div class="row" style="margin-top:8px">
+            <button id="apply-preview">تطبيق + معاينة فورياً</button>
+            <button id="open-site" class="secondary">فتح صفحة المعاينة في تبويب جديد</button>
+          </div>
+          <p class="hint" style="margin-top:8px">ملفان تم رفعهما مسبقًا وسيتم تحميلهما تلقائيًا في صفحة المعاينة (scripts):</p>
+          <ul class="small">
+            <li>/mnt/data/‏‏ads.js</li>
+            <li>/mnt/data/storage.js</li>
+          </ul>
+        </div>
       </div>
-      <div>
-        <label>Ads Right</label>
-        <textarea id="ads-right" rows="4"></textarea>
-      </div>
+
+      <aside>
+        <div class="card">
+          <h2>معاينة الصفحة</h2>
+          <div class="preview" id="preview-area">
+            <div id="ads-header"></div>
+            <div style="display:flex;gap:12px;margin-top:8px">
+              <div id="ads-left" style="width:160px"></div>
+              <div style="flex:1">
+                <div id="content-area">
+                  <h3>محتوى تجريبي</h3>
+                  <p class="small">هذا المحتوى مجرد معاينة، سيعرض محتواك الفعلي داخل المدونة لاحقًا.</p>
+                </div>
+              </div>
+              <div id="ads-right" style="width:160px"></div>
+            </div>
+            <div id="ads-footer" style="margin-top:12px"></div>
+          </div>
+
+          <div style="margin-top:12px" class="small">
+            ملاحظة: ستُحمَّل ملفات السكريبت المرفوعة من المسارات التالية داخل صفحة المعاينة لتعمل الوظائف مثل loadAds() وloadLinks():
+            <ul>
+              <li>/mnt/data/‏‏ads.js</li>
+              <li>/mnt/data/storage.js</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>إحصاءات</h2>
+          <p class="small">زوار فريدين: <span id="visitor-count">0</span></p>
+          <p class="small">عدد الزيارات: <span id="visited-count">0</span></p>
+          <div style="margin-top:8px" class="row">
+            <button id="increase-visit" class="secondary">إضافة زيارة</button>
+            <button id="reset-stats" class="secondary">إعادة ضبط</button>
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <label>Exchange Links (واحد في كل سطر)</label>
-    <textarea id="exchange-links" rows="6" placeholder="https://example.com/"></textarea>
-
-    <label>Blocked Sites (واحد في كل سطر)</label>
-    <textarea id="blocked-sites" rows="3" placeholder="https://bad.example/"></textarea>
-
-    <div class="row">
-      <button id="download-json">تنزيل settings.json</button>
-      <button id="load-local" class="secondary">تحميل من localStorage (إن وُجد)</button>
-      <button id="save-local" class="secondary">حفظ محليًا (localStorage)</button>
-    </div>
-
-    <p class="hint">بعد الضغط على <strong>تنزيل settings.json</strong> ارفع الملف الناتج إلى مجلد المستودع <code>anwaree/-ODUI</code> في GitHub (Add file → Upload files أو Create new file ثم الصق المحتوى).</p>
   </div>
 
   <script>
-    function getFormData() {
-      const header = document.getElementById('ads-header').value;
-      const footer = document.getElementById('ads-footer').value;
-      const left = document.getElementById('ads-left').value;
-      const right = document.getElementById('ads-right').value;
-      const links = document.getElementById('exchange-links').value.split('\\n').map(x=>x.trim()).filter(Boolean);
-      const blocked = document.getElementById('blocked-sites').value.split('\\n').map(x=>x.trim()).filter(Boolean);
-      return {
-        adsenseHeader: header,
-        adsenseFooter: footer,
-        adsenseLeft: left,
-        adsenseRight: right,
-        exchangeLinks: links,
-        blockedSites: blocked
-      };
+    // مساعدة داخل الواجهة: تحميل الإعدادات من localStorage
+    function getAdminSettings() {
+      return JSON.parse(localStorage.getItem('adminSettings') || '{}');
     }
 
-    document.getElementById('download-json').addEventListener('click', () => {
-      const obj = getFormData();
-      const blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'settings.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      alert('تم تنزيل settings.json — الآن ارفعه إلى GitHub repo (anwaree/-ODUI) في المسار الرئيسي.');
-    });
-
-    document.getElementById('save-local').addEventListener('click', () => {
-      const obj = getFormData();
+    function setAdminSettings(obj) {
       localStorage.setItem('adminSettings', JSON.stringify(obj));
-      localStorage.setItem('exchangeLinks', JSON.stringify(obj.exchangeLinks || []));
-      alert('تم حفظ الإعدادات محليًا في localStorage.');
-    });
+    }
 
-    document.getElementById('load-local').addEventListener('click', () => {
-      try {
-        const s = JSON.parse(localStorage.getItem('adminSettings') || '{}');
-        document.getElementById('ads-header').value = s.adsenseHeader || '';
-        document.getElementById('ads-footer').value = s.adsenseFooter || '';
-        document.getElementById('ads-left').value = s.adsenseLeft || '';
-        document.getElementById('ads-right').value = s.adsenseRight || '';
-        const links = JSON.parse(localStorage.getItem('exchangeLinks') || '[]');
-        document.getElementById('exchange-links').value = links.join('\\n');
-        document.getElementById('blocked-sites').value = (s.blockedSites || []).join('\\n');
-        alert('تم تحميل الإعدادات من localStorage.');
-      } catch (e) {
-        alert('لا يوجد إعدادات في localStorage');
+    function fillFormFromSettings() {
+      const s = getAdminSettings();
+      document.getElementById('ads-header-input').value = s.adsenseHeader || '';
+      document.getElementById('ads-footer-input').value = s.adsenseFooter || '';
+      document.getElementById('ads-left-input').value = s.adsenseLeft || '';
+      document.getElementById('ads-right-input').value = s.adsenseRight || '';
+
+      // exchangeLinks
+      const links = JSON.parse(localStorage.getItem('exchangeLinks') || '[]');
+      document.getElementById('exchange-links-input').value = links.join('\n');
+
+      const blocked = (s.blockedSites || []).join('\n');
+      document.getElementById('blocked-sites-input').value = blocked;
+
+      // stats
+      document.getElementById('visitor-count').innerText = parseInt(localStorage.getItem('visitorCount') || '0');
+      document.getElementById('visited-count').innerText = parseInt(localStorage.getItem('visitedCount') || '0');
+    }
+
+    function saveFormToSettings() {
+      const s = getAdminSettings();
+      s.adsenseHeader = document.getElementById('ads-header-input').value;
+      s.adsenseFooter = document.getElementById('ads-footer-input').value;
+      s.adsenseLeft = document.getElementById('ads-left-input').value;
+      s.adsenseRight = document.getElementById('ads-right-input').value;
+
+      const blocked = document.getElementById('blocked-sites-input').value.split('\n').map(x=>x.trim()).filter(Boolean);
+      s.blockedSites = blocked;
+      setAdminSettings(s);
+
+      // exchangeLinks
+      const links = document.getElementById('exchange-links-input').value.split('\n').map(x=>x.trim()).filter(Boolean);
+      localStorage.setItem('exchangeLinks', JSON.stringify(links));
+
+      alert('تم حفظ الإعدادات بنجاح في localStorage. المفتاح: adminSettings و exchangeLinks');
+      fillFormFromSettings();
+    }
+
+    document.getElementById('save-btn').addEventListener('click', saveFormToSettings);
+    document.getElementById('load-btn').addEventListener('click', fillFormFromSettings);
+    document.getElementById('clear-btn').addEventListener('click', ()=>{
+      if(confirm('هل تريد مسح adminSettings و exchangeLinks؟')){
+        localStorage.removeItem('adminSettings');
+        localStorage.removeItem('exchangeLinks');
+        fillFormFromSettings();
       }
     });
 
-    // تحميل بدءي إن وُجد في localStorage
-    document.getElementById('load-local').click();
+    document.getElementById('export-btn').addEventListener('click', ()=>{
+      const exportObj = {
+        adminSettings: getAdminSettings(),
+        exchangeLinks: JSON.parse(localStorage.getItem('exchangeLinks')||'[]')
+      };
+      const blob = new Blob([JSON.stringify(exportObj, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'admin-settings.json'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('import-btn').addEventListener('click', ()=>document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', function(e){
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        try{
+          const data = JSON.parse(reader.result);
+          if(data.adminSettings) localStorage.setItem('adminSettings', JSON.stringify(data.adminSettings));
+          if(data.exchangeLinks) localStorage.setItem('exchangeLinks', JSON.stringify(data.exchangeLinks));
+          alert('تم استيراد الإعدادات');
+          fillFormFromSettings();
+        }catch(err){alert('خطأ في ملف JSON');}
+      };
+      reader.readAsText(f);
+    });
+
+    // معاينة: نطبق القيم على عناصر المعاينة وندمج السكريبتات المرفوعة
+    function applyPreview() {
+      const s = getAdminSettings();
+      document.getElementById('ads-header').innerHTML = s.adsenseHeader || '';
+      document.getElementById('ads-footer').innerHTML = s.adsenseFooter || '';
+      document.getElementById('ads-left').innerHTML = s.adsenseLeft || '';
+      document.getElementById('ads-right').innerHTML = s.adsenseRight || '';
+
+      // تحميل السكريبتات المرفوعة - استخدم المسارات المحلية كما هي
+      // ملاحظة: النظام سيحوّل هذه المسارات عند النشر إن لزم
+      const scripts = [
+        '/mnt/data/\u200f\u200fads.js',
+        '/mnt/data/storage.js'
+      ];
+
+      // إزالة أي سكريبتات سابقة
+      document.querySelectorAll('.injected-script').forEach(n=>n.remove());
+
+      scripts.forEach(src=>{
+        try{
+          const sEl = document.createElement('script');
+          sEl.src = src;
+          sEl.className = 'injected-script';
+          sEl.onload = ()=>console.log('script loaded', src);
+          sEl.onerror = ()=>console.warn('failed to load', src);
+          document.getElementById('preview-area').appendChild(sEl);
+        }catch(e){console.warn(e);}
+      });
+
+      // بعد تحميل السكريبتات حاول استدعاء وظائفهم إن وُجدت
+      setTimeout(()=>{
+        try{ if(typeof loadAds === 'function') loadAds(); }catch(e){}
+        try{ if(typeof loadLinks === 'function') console.log('loadLinks available'); }catch(e){}
+      },600);
+    }
+
+    document.getElementById('apply-preview').addEventListener('click', applyPreview);
+    document.getElementById('open-site').addEventListener('click', ()=>{
+      const win = window.open('', '_blank');
+      const html = document.documentElement.outerHTML;
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    });
+
+    // إحصاءات بسيطة
+    document.getElementById('increase-visit').addEventListener('click', ()=>{
+      const v = parseInt(localStorage.getItem('visitedCount')||'0')+1;
+      localStorage.setItem('visitedCount', v.toString());
+      document.getElementById('visited-count').innerText = v;
+    });
+
+    document.getElementById('reset-stats').addEventListener('click', ()=>{
+      localStorage.removeItem('visitorCount');
+      localStorage.removeItem('visitedCount');
+      fillFormFromSettings();
+    });
+
+    // تحميل أولي للواجهة
+    fillFormFromSettings();
   </script>
 </body>
 </html>
