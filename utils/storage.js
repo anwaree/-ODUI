@@ -50,3 +50,14 @@ if (typeof window !== 'undefined') {
     }
   })();
 }
+
+// حفظ عدد الزيارات
+function saveVisitedCount(count) {
+    localStorage.setItem("visitedCount", count);
+}
+
+// تحميل عدد الزيارات
+function loadVisitedCount() {
+    return parseInt(localStorage.getItem("visitedCount")) || 0;
+}
+
