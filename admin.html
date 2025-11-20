@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم</title>
+    <title>تبادل الزيارات التلقائي</title>
+    <meta name="description" content="نظام تبادل الزيارات التلقائي بين المواقع">
+    <meta name="keywords" content="تبادل زيارات, زيادة الزوار, تبادل تلقائي">
     
     <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
     <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 
     <style type="text/tailwindcss">
     @layer theme {
@@ -17,12 +20,40 @@
             --primary-color: #28a745;
             --secondary-color: #e8f5e9;
             --danger-color: #e50914;
+            --text-primary: #333;
+            --bg-light: #f4f4f4;
+        }
+    }
+
+    @layer base {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+        }
+    }
+
+    @layer utilities {
+        .rtl-layout {
+            direction: rtl;
         }
     }
     </style>
 </head>
 <body>
+    <div id="ads-header"></div>
+    <div id="ads-left"></div>
+    <div id="ads-right"></div>
     <div id="root"></div>
-    <script type="text/babel" src="admin-app.js"></script>
+    <div id="ads-footer"></div>
+    <script type="text/babel" src="utils/ads.js"></script>
+    <script type="text/babel" src="components/Countdown.js"></script>
+    <script type="text/babel" src="components/AddLinkForm.js"></script>
+    <script type="text/babel" src="components/Stats.js"></script>
+    <script type="text/babel" src="components/VisitorList.js"></script>
+    <script type="text/babel" src="components/SitesList.js"></script>
+    <script type="text/babel" src="components/VisitedSites.js"></script>
+    <script type="text/babel" src="utils/storage.js"></script>
+    <script type="text/babel" src="app.js"></script>
 </body>
 </html>
