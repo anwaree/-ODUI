@@ -1,0 +1,74 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+}
+
+.admin-link {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s;
+}
+
+.admin-link:hover {
+    opacity: 0.9;
+}
+
+#ads-header {
+    width: 100%;
+    min-height: 90px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #ddd;
+}
+
+#ads-footer {
+    width: 100%;
+    min-height: 90px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+#ads-left {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px;
+    min-height: 600px;
+    background: #f0f0f0;
+    border-right: 1px solid #ddd;
+    z-index: 10;
+}
+
+#ads-right {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px;
+    min-height: 600px;
+    background: #f0f0f0;
+    border-left: 1px solid #ddd;
+    z-index: 10;
+}
+
+@media (max-width: 1024px) {
+    #ads-left, #ads-right {
+        display: none;
+    }
+}
